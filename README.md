@@ -19,3 +19,5 @@
 ## Results
 
 ![](public-days.png)
+
+![](public-author.png)
