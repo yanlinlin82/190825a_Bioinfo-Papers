@@ -45,3 +45,23 @@ if [ ! -e "data/01_extract/pubmed_date.txt.gz" ]; then
 		| gzip -9 \
 		> data/01_extract/pubmed_date.txt.gz
 fi
+
+if [ ! -e "data/01_extract/pubmed_author.txt.gz" ]; then
+	echo 1>&2 "Generate 'data/01_extract/pubmed_author.txt.gz'"
+	zcat data/00_raw/pubmed_result.txt.gz \
+		| awk '{
+				if ($1=="PMID-") {
+					pmid=$2; a[pmid]=1
+				} else if ($1=="FAU") {
+					b[pmid] = (b[pmid]==""?"":(b[pmid]";"))substr($0,6)
+				}
+			} END {
+				OFS="\t"
+				print "pmid","author"
+				for(i in a){
+					print i,b[i]
+				}
+			}' \
+		| gzip -9 \
+		> data/01_extract/pubmed_author.txt.gz
+fi
